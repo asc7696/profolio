@@ -10,330 +10,328 @@
     <style>
         body {
             font-family: 'Noto Sans TC', sans-serif;
-            background-color: #f8fafc;
-            color: #1e293b;
+            background-color: #f1f5f9;
+            color: #334155;
             overflow-x: hidden;
         }
 
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+        /* 磨砂玻璃效果 */
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
+        /* 選單滑入動畫 */
         .sidebar-item {
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
-            border-left: 4px solid transparent;
+            position: relative;
         }
-
         .sidebar-item:hover {
-            background: rgba(59, 130, 246, 0.05);
-            padding-left: 1.5rem;
+            transform: translateX(8px);
+            color: #3b82f6;
         }
-
         .sidebar-item.active {
-            background: rgba(59, 130, 246, 0.1);
-            border-left: 4px solid #3b82f6;
+            background-color: white;
             color: #2563eb;
             font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .sidebar-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 25%;
+            height: 50%;
+            width: 4px;
+            background: #3b82f6;
+            border-radius: 0 4px 4px 0;
         }
 
+        /* 內容切換動畫 */
         .content-section {
             display: none;
-            animation: slideInUp 0.6s ease-out;
+            animation: fadeInUp 0.5s ease-out;
         }
-
         .content-section.active {
             display: block;
         }
 
-        @keyframes slideInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .hero-gradient {
-            background: linear-gradient(135deg, #6366f1 0%, #3b82f6 100%);
+        /* Iframe 容器 */
+        .iframe-container {
+            position: relative;
+            width: 100%;
+            height: 650px;
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+            background: white;
         }
 
         iframe {
             width: 100%;
-            height: 600px;
+            height: 100%;
             border: none;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
-        .modal {
+        /* 彈出視窗樣式 */
+        .custom-modal {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
             backdrop-filter: blur(4px);
-        }
-
-        .step-card {
-            transition: transform 0.3s ease;
-        }
-        .step-card:hover {
-            transform: translateY(-5px);
+            z-index: 50;
+            align-items: center;
+            justify-content: center;
         }
     </style>
 </head>
 <body class="flex flex-col h-screen">
 
-    <!-- 上方主題橫幅 -->
-    <header class="hero-gradient text-white p-8 shadow-lg flex-shrink-0 relative overflow-hidden">
-        <div class="relative z-10 animate__animated animate__fadeInDown">
-            <h1 class="text-3xl md:text-4xl font-bold tracking-tight">114-2 高三科技應用專題作品集</h1>
-            <p class="mt-2 text-blue-100 opacity-80">探索、創造與數位實踐的學習旅程</p>
+    <!-- 上方：主題橫幅 -->
+    <header class="h-24 flex-shrink-0 bg-slate-900 text-white relative overflow-hidden flex items-center px-8 shadow-xl">
+        <div class="z-10 animate__animated animate__fadeInLeft">
+            <h1 class="text-2xl md:text-3xl font-bold tracking-tight">114-2 高三科技應用專題作品集</h1>
+            <p class="text-blue-400 text-sm opacity-90">科技賦能 · 創意實踐 · 數位轉型</p>
         </div>
-        <!-- 裝飾用圓圈 -->
-        <div class="absolute -top-10 -right-10 w-40 h-40 bg-white opacity-10 rounded-full"></div>
+        <!-- 裝飾元素 -->
+        <div class="absolute right-0 top-0 h-full w-1/3 bg-gradient-to-l from-blue-600/20 to-transparent"></div>
+        <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl"></div>
     </header>
 
     <div class="flex flex-1 overflow-hidden">
-        <!-- 左方選單 -->
-        <aside class="w-64 md:w-72 glass-panel border-r flex-shrink-0 overflow-y-auto p-4 flex flex-col gap-2">
-            <div class="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">作品分類</div>
+        
+        <!-- 左方：選單 -->
+        <aside class="w-72 bg-slate-50 border-r border-slate-200 p-6 flex flex-col gap-2 overflow-y-auto">
+            <div class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 px-2">導覽目錄</div>
             
-            <div onclick="showContent('intro')" id="nav-intro" class="sidebar-item active p-4 rounded-xl flex items-center gap-3">
-                <span>🏠</span> 首頁故事
-            </div>
-            
-            <div class="mt-4 px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">網頁遊戲</div>
-            <div onclick="showContent('game1')" id="nav-game1" class="sidebar-item p-4 rounded-xl flex items-center gap-3">
-                <span>🎮</span> CUBE CITY
-            </div>
-            <div onclick="showContent('game2')" id="nav-game2" class="sidebar-item p-4 rounded-xl flex items-center gap-3">
-                <span>🛡️</span> 監獄迷宮：特種行動
-            </div>
+            <nav class="flex flex-col gap-1">
+                <button onclick="showSection('home')" id="btn-home" class="sidebar-item active flex items-center gap-3 p-3 rounded-lg text-left">
+                    <span>🏠</span> 首頁情境
+                </button>
+                
+                <div class="h-px bg-slate-200 my-4"></div>
+                <div class="text-[10px] font-bold text-slate-400 uppercase mb-2 px-2">網頁互動遊戲</div>
+                
+                <button onclick="showSection('game1')" id="btn-game1" class="sidebar-item flex items-center gap-3 p-3 rounded-lg text-left">
+                    <span>⛷️</span> 極限滑雪–大賽版
+                </button>
+                <button onclick="showSection('game2')" id="btn-game2" class="sidebar-item flex items-center gap-3 p-3 rounded-lg text-left">
+                    <span>🗝️</span> 監獄迷宮：特種行動
+                </button>
 
-            <div class="mt-4 px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">3D 作品</div>
-            <div onclick="showContent('3d-a')" id="nav-3d-a" class="sidebar-item p-4 rounded-xl flex items-center gap-3">
-                <span>💖</span> 3D 作品集 A：美樂蒂
-            </div>
-            <div onclick="showContent('3d-b')" id="nav-3d-b" class="sidebar-item p-4 rounded-xl flex items-center gap-3">
-                <span>🐻</span> 3D 作品集 B：彩虹熊
-            </div>
+                <div class="h-px bg-slate-200 my-4"></div>
+                <div class="text-[10px] font-bold text-slate-400 uppercase mb-2 px-2">3D 模型空間</div>
 
-            <div class="mt-auto pt-4 border-t">
-                <div onclick="showContent('reflection')" id="nav-reflection" class="sidebar-item p-4 rounded-xl flex items-center gap-3">
-                    <span>📝</span> 學習反思
+                <button onclick="showSection('3da')" id="btn-3da" class="sidebar-item flex items-center gap-3 p-3 rounded-lg text-left">
+                    <span>🐰</span> 3D 作品集 A：美樂蒂
+                </button>
+                <button onclick="showSection('3db')" id="btn-3db" class="sidebar-item flex items-center gap-3 p-3 rounded-lg text-left">
+                    <span>🧸</span> 3D 作品集 B：彩虹熊
+                </button>
+
+                <div class="mt-auto pt-6">
+                    <button onclick="showSection('reflection')" id="btn-reflection" class="sidebar-item flex items-center gap-3 p-3 rounded-lg text-left w-full text-blue-600 font-medium">
+                        <span>💡</span> 學習反思總結
+                    </button>
                 </div>
-            </div>
+            </nav>
         </aside>
 
-        <!-- 右方顯示區 -->
-        <main class="flex-1 overflow-y-auto bg-slate-50 p-6 md:p-10 relative">
+        <!-- 右方：內容顯示 -->
+        <main class="flex-1 overflow-y-auto bg-white p-8 md:p-12 relative">
             
-            <!-- 首頁故事 -->
-            <section id="intro" class="content-section active max-w-4xl mx-auto">
-                <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
-                    <h2 class="text-3xl font-bold text-slate-800 mb-6">歡迎來到我的數位創作空間</h2>
-                    <p class="text-lg text-slate-600 leading-relaxed mb-6">
-                        這份作品集紀錄了我在 114學年度第二學期，於科技應用專題課程中的所有努力與突破。
-                        從 3D 建模到 AI 驅動的遊戲開發，每一項技術都是我嘗試突破舒適圈的證明。
+            <!-- 區塊：首頁故事 -->
+            <section id="home" class="content-section active max-w-4xl">
+                <div class="animate__animated animate__fadeIn">
+                    <span class="inline-block px-3 py-1 bg-blue-100 text-blue-600 text-xs font-bold rounded-full mb-4">WELCOME</span>
+                    <h2 class="text-4xl font-extrabold text-slate-800 mb-6">將想像力轉化為<br><span class="text-blue-600">可互動的數位現實</span></h2>
+                    <p class="text-lg text-slate-500 leading-relaxed mb-8">
+                        歡迎來到我的 114學年度學習成果展示。在這趟旅程中，我探索了從傳統開發到 AI 輔助創作的轉變。
+                        透過本網頁，您將看到我如何結合 3D 建模與 AI 程式生成技術，打造出獨特的互動體驗。
                     </p>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="p-6 bg-blue-50 rounded-2xl border border-blue-100">
-                            <h3 class="font-bold text-blue-800 mb-2">核心技術</h3>
-                            <ul class="text-sm text-blue-600 space-y-1">
-                                <li>• 3D 物件建模 (Monster Mash/Polycam)</li>
-                                <li>• AI 輔助程式開發 (Google AI Studio)</li>
-                                <li>• 靜態網頁託管 (GitHub Pages)</li>
-                            </ul>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="glass-effect p-6 rounded-2xl border border-slate-100 shadow-sm">
+                            <div class="text-blue-500 text-2xl mb-3">⚡</div>
+                            <h4 class="font-bold mb-2">快速原型製作</h4>
+                            <p class="text-sm text-slate-500">利用 Google AI Studio 與 Gemini，將開發週期從天縮短至小時。</p>
                         </div>
-                        <div class="p-6 bg-indigo-50 rounded-2xl border border-indigo-100">
-                            <h3 class="font-bold text-indigo-800 mb-2">學習目標</h3>
-                            <p class="text-sm text-indigo-600">透過 AI 與現代工具，快速將創意轉化為可互動的數位成品。</p>
+                        <div class="glass-effect p-6 rounded-2xl border border-slate-100 shadow-sm">
+                            <div class="text-indigo-500 text-2xl mb-3">🎨</div>
+                            <h4 class="font-bold mb-2">多維度創作</h4>
+                            <p class="text-sm text-slate-500">結合 Monster Mash 的動態 3D 與 Polycam 的實體建模技術。</p>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- 遊戲 1 -->
-            <section id="game1" class="content-section max-w-5xl mx-auto">
-                <h2 class="text-2xl font-bold mb-4 flex items-center gap-2">
-                    <span class="px-3 py-1 bg-blue-100 text-blue-600 rounded-lg text-sm">遊戲 1</span>
-                    CUBE CITY
-                </h2>
-                <div class="mb-4 flex gap-2">
-                    <button onclick="showAlert('這是一個使用 Google AI Studio 輔助開發的方塊都市挑戰遊戲。')" class="text-sm bg-white border px-4 py-2 rounded-full hover:bg-gray-50 shadow-sm transition">💡 重點提醒</button>
-                    <a href="https://y11202009-sys.github.io/game/ai_studio_code.html" target="_blank" class="text-sm bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 shadow-sm transition">新分頁開啟</a>
+            <!-- 區塊：遊戲1 -->
+            <section id="game1" class="content-section">
+                <div class="flex items-end justify-between mb-6">
+                    <div>
+                        <h2 class="text-3xl font-bold text-slate-800">極限滑雪–大賽版</h2>
+                        <p class="text-slate-500 mt-1">開發工具：Google AI Studio + HTML5</p>
+                    </div>
+                    <div class="flex gap-3">
+                        <button onclick="openModal('心得亮點', '我覺得用AI做網頁小遊戲真的非常方便，之前還要慢慢地打程式碼跟除錯，現在不用了，我只需要把我的想法跟AI說，他就會依照我的想法生成出我要做的東西！')" class="px-5 py-2 bg-slate-100 hover:bg-slate-200 rounded-full text-sm font-medium transition">📜 創作心得</button>
+                        <a href="https://kyujinqq.github.io/webgame/ai_studio_code.html" target="_blank" class="px-5 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-full text-sm font-medium transition shadow-lg shadow-blue-200">全螢幕遊玩</a>
+                    </div>
                 </div>
-                <iframe src="https://y11202009-sys.github.io/game/ai_studio_code.html"></iframe>
+                <div class="iframe-container">
+                    <iframe src="https://kyujinqq.github.io/webgame/ai_studio_code.html"></iframe>
+                </div>
             </section>
 
-            <!-- 遊戲 2 -->
-            <section id="game2" class="content-section max-w-5xl mx-auto">
-                <h2 class="text-2xl font-bold mb-4 flex items-center gap-2">
-                    <span class="px-3 py-1 bg-green-100 text-green-600 rounded-lg text-sm">遊戲 2</span>
-                    監獄迷宮：特種行動
-                </h2>
-                <div class="mb-4 flex gap-2">
-                    <button onclick="showAlert('充滿緊張感的迷宮脫逃，重點在於障礙物的邏輯判斷！')" class="text-sm bg-white border px-4 py-2 rounded-full hover:bg-gray-50 shadow-sm transition">💡 重點提醒</button>
-                    <a href="https://ang00964.github.io/game/ai_studio_code_(8).html" target="_blank" class="text-sm bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 shadow-sm transition">新分頁開啟</a>
+            <!-- 區塊：遊戲2 -->
+            <section id="game2" class="content-section">
+                <div class="flex items-end justify-between mb-6">
+                    <div>
+                        <h2 class="text-3xl font-bold text-slate-800">監獄迷宮：特種行動</h2>
+                        <p class="text-slate-500 mt-1">開發工具：Google AI Studio + CSS Animation</p>
+                    </div>
+                    <div class="flex gap-3">
+                        <button onclick="openModal('技術重點', '此作品難點在於迷宮路徑與敵方偵查邏輯的自動生成，透過 AI 反覆修訂提示詞才達到理想效果。')" class="px-5 py-2 bg-slate-100 hover:bg-slate-200 rounded-full text-sm font-medium transition">📜 創作心得</button>
+                        <a href="https://ang00964.github.io/game/ai_studio_code_(8).html" target="_blank" class="px-5 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-full text-sm font-medium transition shadow-lg shadow-blue-200">全螢幕遊玩</a>
+                    </div>
                 </div>
-                <iframe src="https://ang00964.github.io/game/ai_studio_code_(8).html"></iframe>
+                <div class="iframe-container">
+                    <iframe src="https://ang00964.github.io/game/ai_studio_code_(8).html"></iframe>
+                </div>
             </section>
 
-            <!-- 3D 作品 A -->
-            <section id="3d-a" class="content-section max-w-5xl mx-auto">
-                <div class="bg-white rounded-3xl overflow-hidden shadow-lg">
-                    <div class="p-8">
+            <!-- 區塊：3D 作品 A -->
+            <section id="3da" class="content-section">
+                <div class="max-w-4xl">
+                    <div class="bg-gradient-to-br from-pink-50 to-white p-8 rounded-3xl border border-pink-100 mb-8 shadow-sm">
                         <h2 class="text-3xl font-bold text-pink-600 mb-2">美樂蒂</h2>
-                        <p class="text-slate-500 mb-6">簡介：一隻在電臀的美樂蒂</p>
-                        <div class="bg-pink-50 p-6 rounded-2xl mb-8">
-                            <h4 class="font-bold text-pink-800 mb-2">✨ 創作心得</h4>
-                            <p class="text-pink-700">這個作品是使用 monster mash 完成的，因為我很喜歡美樂蒂，我發現玩弄它的尾巴很可愛。</p>
-                        </div>
-                        <iframe src="https://yhn07.github.io/3d/" style="height: 500px;"></iframe>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 3D 作品 B -->
-            <section id="3d-b" class="content-section max-w-5xl mx-auto">
-                <div class="bg-white rounded-3xl overflow-hidden shadow-lg">
-                    <div class="p-8">
-                        <h2 class="text-3xl font-bold text-indigo-600 mb-2">一隻可愛的彩虹熊</h2>
-                        <p class="text-slate-500 mb-6">介紹：我準備物件彩虹熊，並且透過 polycam 生成 3d 的天使熊。</p>
-                        <div class="bg-indigo-50 p-6 rounded-2xl mb-8">
-                            <h4 class="font-bold text-indigo-800 mb-2">✨ 創作心得</h4>
-                            <p class="text-indigo-700">今天的課程很特別，也是我第一次使用這個程式，雖然後來沒有成功，但我覺得特別有趣!</p>
-                        </div>
-                        <iframe src="https://user-glitch-dotcom.github.io/3d/" style="height: 500px;"></iframe>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 學習反思 -->
-            <section id="reflection" class="content-section max-w-4xl mx-auto pb-20">
-                <h2 class="text-4xl font-bold text-slate-800 mb-8 text-center">課程回顧與反思</h2>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-                    <div class="step-card bg-white p-6 rounded-2xl shadow-sm border-l-4 border-yellow-400">
-                        <span class="text-2xl mb-2 block">🎨</span>
-                        <h3 class="font-bold mb-2">3D 物件製作</h3>
-                        <p class="text-sm text-slate-500">使用 monster mash 及 polycam 製作 3D 物件，將平面想像轉化為空間存在。</p>
-                    </div>
-                    <div class="step-card bg-white p-6 rounded-2xl shadow-sm border-l-4 border-blue-400">
-                        <span class="text-2xl mb-2 block">🤖</span>
-                        <h3 class="font-bold mb-2">AI 遊戲生成</h3>
-                        <p class="text-sm text-slate-500">使用 google ai studio 生成網頁遊戲，體驗提示詞工程與程式邏輯的結合。</p>
-                    </div>
-                    <div class="step-card bg-white p-6 rounded-2xl shadow-sm border-l-4 border-green-400">
-                        <span class="text-2xl mb-2 block">🚀</span>
-                        <h3 class="font-bold mb-2">GitHub 部署</h3>
-                        <p class="text-sm text-slate-500">使用 github 上傳並發布網頁，將作品推向全世界的網路空間。</p>
-                    </div>
-                    <div class="step-card bg-white p-6 rounded-2xl shadow-sm border-l-4 border-purple-400">
-                        <span class="text-2xl mb-2 block">📂</span>
-                        <h3 class="font-bold mb-2">首頁整合</h3>
-                        <p class="text-sm text-slate-500">使用 Gemini 生成最終的學習成果首頁，完成系統性的整合。</p>
-                    </div>
-                </div>
-
-                <div class="bg-slate-800 text-white p-8 rounded-3xl shadow-xl relative overflow-hidden">
-                    <div class="relative z-10">
-                        <h3 class="text-2xl font-bold mb-4">總結心得</h3>
-                        <p class="leading-relaxed opacity-90">
-                            其中，製作 3D 物件很有趣，Google AI Studio 生成網頁遊戲令我印象深刻。<br><br>
-                            我覺得<span class="text-yellow-400 font-bold underline">最難的是網頁上傳到 GitHub 的過程</span>，細節非常瑣碎，碰到了非常多的難關。但透過不斷的嘗試與解決問題，最後得到滿滿的成就感，這才是學習中最珍貴的部分。
+                        <p class="text-slate-600 mb-4 font-medium italic">「一隻在電臀的美樂蒂」</p>
+                        <p class="text-slate-500 text-sm leading-relaxed border-l-4 border-pink-200 pl-4">
+                            心得：這個作品是使用 monster mash 完成的，因為我很喜歡美樂蒂，我發現玩弄它的尾巴很可愛。
                         </p>
                     </div>
-                    <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-blue-500 opacity-20 rounded-full blur-3xl"></div>
+                    <div class="iframe-container" style="height: 500px;">
+                        <iframe src="https://yhn07.github.io/3d/"></iframe>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 區塊：3D 作品 B -->
+            <section id="3db" class="content-section">
+                <div class="max-w-4xl">
+                    <div class="bg-gradient-to-br from-indigo-50 to-white p-8 rounded-3xl border border-indigo-100 mb-8 shadow-sm">
+                        <h2 class="text-3xl font-bold text-indigo-600 mb-2">一隻可愛的彩虹熊</h2>
+                        <p class="text-slate-600 mb-4 font-medium">介紹：我準備物件彩虹熊，並且透過 Polycam 生成 3D 的天使熊。</p>
+                        <p class="text-slate-500 text-sm leading-relaxed border-l-4 border-indigo-200 pl-4">
+                            心得：今天的課程很特別，也是我第一次使用這個程式，雖然後來沒有成功，但我覺得特別有趣!
+                        </p>
+                    </div>
+                    <div class="iframe-container" style="height: 500px;">
+                        <iframe src="https://user-glitch-dotcom.github.io/3d/"></iframe>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 區塊：學習反思 -->
+            <section id="reflection" class="content-section max-w-4xl pb-16">
+                <h2 class="text-4xl font-black text-slate-800 mb-12 flex items-center gap-4">
+                    <span class="w-12 h-1 bg-blue-600"></span> 學習反思與總結
+                </h2>
+                
+                <div class="space-y-8">
+                    <!-- 反思卡片 1 -->
+                    <div class="flex gap-6 group">
+                        <div class="w-12 h-12 flex-shrink-0 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center font-bold text-xl group-hover:bg-blue-600 group-hover:text-white transition-colors">1</div>
+                        <div>
+                            <h4 class="text-xl font-bold text-slate-800 mb-2">3D 物件製作</h4>
+                            <p class="text-slate-500">利用 Monster Mash 與 Polycam 掌握基礎建模邏輯。我覺得製作 3D 物件的過程充滿了驚喜與樂趣。</p>
+                        </div>
+                    </div>
+
+                    <!-- 反思卡片 2 -->
+                    <div class="flex gap-6 group">
+                        <div class="w-12 h-12 flex-shrink-0 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center font-bold text-xl group-hover:bg-indigo-600 group-hover:text-white transition-colors">2</div>
+                        <div>
+                            <h4 class="text-xl font-bold text-slate-800 mb-2">Google AI Studio 實踐</h4>
+                            <p class="text-slate-500">生成網頁遊戲令我印象深刻，AI 大幅降低了技術門檻，讓我可以更專注於遊戲玩法的設計。</p>
+                        </div>
+                    </div>
+
+                    <!-- 反思卡片 3 -->
+                    <div class="flex gap-6 group">
+                        <div class="w-12 h-12 flex-shrink-0 bg-green-100 text-green-600 rounded-2xl flex items-center justify-center font-bold text-xl group-hover:bg-green-600 group-hover:text-white transition-colors">3</div>
+                        <div>
+                            <h4 class="text-xl font-bold text-slate-800 mb-2">GitHub 部署挑戰</h4>
+                            <p class="text-slate-500">我覺得最難的是網頁上傳到 GitHub 過程很瑣碎，碰到了非常多的難關。雖然辛苦，但最後成功解決時得到了滿滿的成就感。</p>
+                        </div>
+                    </div>
+
+                    <!-- 反思卡片 4 -->
+                    <div class="flex gap-6 group">
+                        <div class="w-12 h-12 flex-shrink-0 bg-purple-100 text-purple-600 rounded-2xl flex items-center justify-center font-bold text-xl group-hover:bg-purple-600 group-hover:text-white transition-colors">4</div>
+                        <div>
+                            <h4 class="text-xl font-bold text-slate-800 mb-2">整合與呈現</h4>
+                            <p class="text-slate-500">使用 Gemini 協助生成並美化學習成果首頁，將零散的作品集結成具備層次感的個人數位作品集。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 結語區域 -->
+                <div class="mt-12 p-8 bg-slate-900 rounded-3xl text-white shadow-2xl animate__animated animate__pulse">
+                    <p class="text-lg font-light leading-relaxed italic">
+                        「科技不只是工具，更是擴張創意的翅膀。儘管過程有挫折，但每一次的 debug 都是成長的養分。」
+                    </p>
                 </div>
             </section>
 
         </main>
     </div>
 
-    <!-- 彈出視窗 -->
-    <div id="modal" class="modal" onclick="closeModal()">
-        <div class="bg-white p-8 rounded-2xl max-w-sm mx-4 shadow-2xl animate__animated animate__zoomIn" onclick="event.stopPropagation()">
-            <div class="flex items-center gap-3 mb-4">
-                <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600">💡</div>
-                <h3 class="text-xl font-bold">重點提示</h3>
-            </div>
-            <p id="modal-text" class="text-slate-600 mb-6"></p>
-            <button onclick="closeModal()" class="w-full bg-slate-800 text-white py-2 rounded-xl hover:bg-slate-700 transition">我理解了</button>
+    <!-- 彈出視窗：提示訊息 -->
+    <div id="modal" class="custom-modal" onclick="closeModal()">
+        <div class="bg-white p-8 rounded-3xl max-w-md w-full mx-4 animate__animated animate__zoomIn" onclick="event.stopPropagation()">
+            <h3 id="modal-title" class="text-xl font-bold text-slate-800 mb-4">標題</h3>
+            <p id="modal-body" class="text-slate-600 leading-relaxed mb-6">內容文字</p>
+            <button onclick="closeModal()" class="w-full bg-blue-600 text-white py-3 rounded-2xl font-bold hover:bg-blue-700 transition">關閉視窗</button>
         </div>
     </div>
 
     <script>
-        function showContent(id) {
+        // 切換區塊邏輯
+        function showSection(id) {
             // 隱藏所有區塊
-            const sections = document.querySelectorAll('.content-section');
-            sections.forEach(s => s.classList.remove('active'));
-
-            // 取消所有選單項目的 active
-            const navItems = document.querySelectorAll('.sidebar-item');
-            navItems.forEach(i => i.classList.remove('active'));
-
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            // 取消選單 active
+            document.querySelectorAll('.sidebar-item').forEach(b => b.classList.remove('active'));
+            
             // 顯示目標區塊
-            const target = document.getElementById(id);
-            if (target) {
-                target.classList.add('active');
-            }
+            document.getElementById(id).classList.add('active');
+            // 設定選單 active
+            document.getElementById('btn-' + id).classList.add('active');
 
-            // 設定選單項目的 active
-            const navItem = document.getElementById('nav-' + id);
-            if (navItem) {
-                navItem.classList.add('active');
-            }
-
-            // 如果是手機版，可以在切換後自動滾動到最上方
+            // 自動回到頂部
             document.querySelector('main').scrollTop = 0;
         }
 
-        function showAlert(text) {
-            const modal = document.getElementById('modal');
-            const modalText = document.getElementById('modal-text');
-            modalText.innerText = text;
-            modal.style.display = 'flex';
+        // 彈窗邏輯
+        function openModal(title, body) {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-body').innerText = body;
+            document.getElementById('modal').style.display = 'flex';
         }
 
         function closeModal() {
-            const modal = document.getElementById('modal');
-            modal.style.display = 'none';
+            document.getElementById('modal').style.display = 'none';
         }
 
-        // 監聽鍵盤 ESC 關閉視窗
-        document.addEventListener('keydown', (e) => {
+        // 監聽鍵盤
+        window.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') closeModal();
-        });
-
-        // 初始動畫效果：當滾動到元素時顯示
-        const observerOptions = {
-            threshold: 0.1
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('animate__animated', 'animate__fadeInUp');
-                }
-            });
-        }, observerOptions);
-
-        document.querySelectorAll('.step-card').forEach(card => {
-            observer.observe(card);
         });
     </script>
 </body>
