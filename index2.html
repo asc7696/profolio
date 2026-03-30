@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>114-2 高三科技應用專題作品集</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #f1f5f9;
+            overflow-x: hidden;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+        }
+        .sidebar-item {
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-left: 4px solid transparent;
+        }
+        .sidebar-item:hover, .sidebar-item.active {
+            background: rgba(56, 189, 248, 0.1);
+            border-left: 4px solid #38bdf8;
+            padding-left: 1.5rem;
+        }
+        .content-frame {
+            width: 100%;
+            height: 500px;
+            border-radius: 0.5rem;
+            border: none;
+            background: #fff;
+        }
+        /* 故事感進入動畫 */
+        .hero-title {
+            background: linear-gradient(to right, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <header class="w-full p-6 glass-card mb-4 animate__animated animate__fadeInDown">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl md:text-3xl font-bold hero-title tracking-wider">
+                114-2 高三科技應用專題作品集 - [班級][座號][姓名]
+            </h1>
+            <div class="hidden md:block text-slate-400 text-sm italic">
+                探索科技與創意的交界處...
+            </div>
+        </div>
+    </header>
+
+    <div class="flex flex-1 container mx-auto px-4 pb-8 gap-6 overflow-hidden">
+        
+        <nav class="w-1/4 glass-card p-4 hidden md:block animate__animated animate__fadeInLeft">
+            <h2 class="text-slate-500 uppercase text-xs font-bold mb-6 tracking-widest px-4">作品目錄</h2>
+            <ul class="space-y-4">
+                <li onclick="showContent('game1')" class="sidebar-item p-4 rounded active" id="btn-game1">🎮 網頁遊戲 1：極限滑雪</li>
+                <li onclick="showContent('game2')" class="sidebar-item p-4 rounded" id="btn-game2">⚔️ 網頁遊戲 2：監獄迷宮</li>
+                <li onclick="showContent('3da')" class="sidebar-item p-4 rounded" id="btn-3da">🐰 3D 作品 A：美樂蒂</li>
+                <li onclick="showContent('3db')" class="sidebar-item p-4 rounded" id="btn-3db">🧸 3D 作品 B：彩虹天使熊</li>
+                <li onclick="showContent('reflection')" class="sidebar-item p-4 rounded" id="btn-reflection">📝 學習反思與總結</li>
+            </ul>
+        </nav>
+
+        <main class="flex-1 glass-card p-8 overflow-y-auto animate__animated animate__fadeInRight" id="main-content">
+            <div id="content-area" class="animate__animated">
+                </div>
+        </main>
+    </div>
+
+    <div id="modal" class="fixed inset-0 bg-black/60 flex items-center justify-center hidden z-50 transition-opacity">
+        <div class="glass-card p-8 max-w-md mx-4 animate__animated animate__zoomIn bg-slate-800">
+            <h3 class="text-xl font-bold mb-4 text-sky-400" id="modal-title">重點提醒</h3>
+            <p class="text-slate-300 leading-relaxed" id="modal-body"></p>
+            <button onclick="closeModal()" class="mt-6 px-6 py-2 bg-sky-500 hover:bg-sky-400 text-white rounded-full transition-colors w-full">我知道了</button>
+        </div>
+    </div>
+
+    <script>
+        const data = {
+            game1: {
+                title: "極限滑雪 – 大賽版",
+                url: "https://kyujinqq.github.io/webgame/ai_studio_code.html",
+                intro: "我覺得用AI做網頁小遊戲真的非常方便，之前還要慢慢地打程式碼根除錯，現在不用了，我只需要把我的想法跟AI說，他就會依照我的想法生成出我要做的東西！",
+                tip: "點擊這裡：AI 如何加速我的開發？",
+                tipContent: "透過 AI，我能跳過繁瑣的語法糾錯，直接專注於「關卡設計」與「遊戲邏輯」。"
+            },
+            game2: {
+                title: "監獄迷宮：特種行動",
+                url: "https://ang00964.github.io/game/ai_studio_code_(8).html",
+                intro: "此作品難點在於迷宮路徑與敵方偵查邏輯的自動生成，透過 AI 反覆修訂提示詞才達到理想效果。",
+                tip: "點擊這裡：關於敵方 AI 邏輯",
+                tipContent: "這項作品測試了 Prompt Engineering 的極限，如何精準描述「追逐演算法」是成功的關鍵。"
+            },
+            3da: {
+                title: "3D 作品集 A：美樂蒂",
+                url: "https://yhn07.github.io/3d/",
+                intro: "一隻在電臀的美樂蒂。這個作品是使用 Monster Mash 完成的，因為我很喜歡美樂蒂，我發現玩弄它的尾巴很可愛。",
+                tip: "點擊這裡：Monster Mash 技術",
+                tipContent: "這是一個基於手繪輪廓自動生成 3D 模型的工具，讓 2D 畫作能瞬間具備動態與深度。"
+            },
+            3db: {
+                title: "3D 作品集 B：彩虹天使熊",
+                url: "https://user-glitch-dotcom.github.io/3d/",
+                intro: "準備物件彩虹熊，並透過 Polycam 生成 3D 的天使熊。今天的課程很特別，也是我第一次使用這個程式，雖然後來沒有成功，但我覺得特別有趣！",
+                tip: "點擊這裡：失敗的意義",
+                tipContent: "雖然 Polycam 掃描過程遇到挑戰，但了解攝影測量法 (Photogrammetry) 的原理比成果更重要。"
+            },
+            reflection: {
+                title: "學習反思與總結",
+                content: `
+                    <div class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="p-4 bg-white/5 rounded-lg border border-white/10 hover:border-sky-500/50 transition-all">
+                                <h4 class="text-sky-400 font-bold mb-2">1. 3D 物件製作</h4>
+                                <p class="text-sm text-slate-400">使用 Monster Mash 及 Polycam 探索維度轉換。</p>
+                            </div>
+                            <div class="p-4 bg-white/5 rounded-lg border border-white/10 hover:border-sky-500/50 transition-all">
+                                <h4 class="text-sky-400 font-bold mb-2">2. AI 遊戲生成</h4>
+                                <p class="text-sm text-slate-400">利用 Google AI Studio 實踐快速原型開發。</p>
+                            </div>
+                            <div class="p-4 bg-white/5 rounded-lg border border-white/10 hover:border-sky-500/50 transition-all">
+                                <h4 class="text-sm text-sky-400 font-bold mb-2">3. GitHub 上傳</h4>
+                                <p class="text-sm text-slate-400">學習版本控制與雲端部署的基礎流程。</p>
+                            </div>
+                            <div class="p-4 bg-white/5 rounded-lg border border-white/10 hover:border-sky-500/50 transition-all">
+                                <h4 class="text-sky-400 font-bold mb-2">4. 網站架設</h4>
+                                <p class="text-sm text-slate-400">使用 Gemini 生成本次學習成果網站首頁。</p>
+                            </div>
+                        </div>
+                        <div class="mt-8 p-6 bg-sky-500/10 rounded-xl border-l-4 border-sky-500">
+                            <h4 class="text-xl font-bold mb-3">心路歷程</h4>
+                            <p class="leading-relaxed text-slate-300">
+                                製作 3D 物件很有趣，Google AI Studio 生成網頁遊戲令我印象深刻。
+                                我覺得最難的是網頁上傳到 GitHub 過程很瑣碎，碰到了非常多的難關，
+                                還好一一解決，最後也得到滿滿的成就感。
+                            </p>
+                        </div>
+                    </div>
+                `,
+                tip: "點擊這裡：給未來的自己",
+                tipContent: "解決 GitHub 的瑣碎問題，正是成為科技人才的第一步！堅持下去是值得的。"
+            }
+        };
+
+        function showContent(key) {
+            const area = document.getElementById('content-area');
+            const item = data[key];
+            
+            // 更換選單狀態
+            document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
+            document.getElementById('btn-' + key).classList.add('active');
+
+            // 加入滑入動畫效果
+            area.classList.remove('animate__fadeInUp');
+            void area.offsetWidth; // 觸發重繪
+            area.classList.add('animate__fadeInUp');
+
+            if (key === 'reflection') {
+                area.innerHTML = `
+                    <h2 class="text-3xl font-bold mb-6">${item.title}</h2>
+                    ${item.content}
+                    <button onclick="openModal('${key}')" class="mt-8 text-sky-400 underline decoration-sky-400/30 underline-offset-8 hover:text-sky-300 transition-all">
+                        ✨ ${item.tip}
+                    </button>
+                `;
+            } else {
+                area.innerHTML = `
+                    <h2 class="text-3xl font-bold mb-2">${item.title}</h2>
+                    <p class="text-slate-400 mb-6 italic">"${item.intro}"</p>
+                    <div class="relative group">
+                        <iframe src="${item.url}" class="content-frame shadow-2xl"></iframe>
+                        <a href="${item.url}" target="_blank" class="absolute top-4 right-4 bg-black/50 p-2 rounded hover:bg-black text-xs">另開視窗觀看 ↗</a>
+                    </div>
+                    <button onclick="openModal('${key}')" class="mt-6 text-sky-400 underline decoration-sky-400/30 underline-offset-8 hover:text-sky-300 transition-all">
+                        💡 ${item.tip}
+                    </button>
+                `;
+            }
+        }
+
+        function openModal(key) {
+            document.getElementById('modal-body').innerText = data[key].tipContent;
+            document.getElementById('modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.add('hidden');
+        }
+
+        // 初始化
+        window.onload = () => showContent('game1');
+    </script>
+</body>
+</html>
